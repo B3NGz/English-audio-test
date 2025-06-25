@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Audio 1 – 2 Play Limit</title>
+  <title>Audio 1 – Max 2 Plays</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,20 +22,31 @@
 <body>
   <h2>🎧 Audio 1 – You may only play this audio twice.</h2>
   <audio id="audioPlayer" controls>
-    <source src="Audio 1.mp3" type="audio/mpeg">
+    <source src="Audio%201.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
   <div id="notice"></div>
 
   <script>
-    let playCount = 0;
     const audio = document.getElementById("audioPlayer");
     const notice = document.getElementById("notice");
 
+    // Load play count from localStorage
+    let playCount = parseInt(localStorage.getItem("audio1_plays")) || 0;
+
+    // If already exceeded, lock it
+    if (playCount >= 2) {
+      audio.pause();
+      audio.controls = false;
+      notice.textContent = "❌ You have already used both allowed plays.";
+    }
+
     audio.addEventListener("play", () => {
       playCount++;
+      localStorage.setItem("audio1_plays", playCount);
+
       if (playCount === 2) {
-        notice.textContent = "⚠️ Last allowed play!";
+        notice.textContent = "⚠️ This is your last allowed play.";
       } else if (playCount > 2) {
         audio.pause();
         audio.controls = false;
