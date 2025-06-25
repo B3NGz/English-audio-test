@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio 1 – 2 Play Limit</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 40px;
+    }
+    audio {
+      margin-top: 20px;
+    }
+    #notice {
+      margin-top: 20px;
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎧 Audio 1 – You may only play this audio twice.</h2>
+  <audio id="audioPlayer" controls>
+    <source src="Audio 1.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <div id="notice"></div>
+
+  <script>
+    let playCount = 0;
+    const audio = document.getElementById("audioPlayer");
+    const notice = document.getElementById("notice");
+
+    audio.addEventListener("play", () => {
+      playCount++;
+      if (playCount === 2) {
+        notice.textContent = "⚠️ Last allowed play!";
+      } else if (playCount > 2) {
+        audio.pause();
+        audio.controls = false;
+        notice.textContent = "❌ You have reached the 2-play limit.";
+      }
+    });
+  </script>
+</body>
+</html>
