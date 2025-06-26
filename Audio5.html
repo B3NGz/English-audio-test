@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio 5 – Max 2 Plays</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 40px;
+    }
+    audio {
+      margin-top: 20px;
+    }
+    #notice {
+      margin-top: 20px;
+      color: red;
+      font-weight: bold;
+    }
+    #top-logo {
+      max-width: 500px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <img id="top-logo" src="Ace_logo.png" alt="Exam Logo">
+
+  <h2>🎧 Audio 5 – You may only play this audio twice.</h2>
+  <audio id="audioPlayer" controls>
+    <source src="Audio%205.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <div id="notice"></div>
+
+  <!-- ✅ Expiring counter script -->
+  <script>
+    const audio = document.getElementById("audioPlayer");
+    const notice = document.getElementById("notice");
+
+    const now = Date.now(); // Current time in ms
+    const storedTime = localStorage.getItem("audio5_time");
+    let playCount = parseInt(localStorage.getItem("audio5_plays")) || 0;
+
+    // If no time saved or 24 hours passed, reset
+    if (!storedTime || now - storedTime > 24 * 60 * 60 * 1000) {
+      localStorage.removeItem("audio5_plays");
+      localStorage.setItem("audio5_time", now);
+      playCount = 0;
+    }
+
+    if (playCount >= 2) {
+      audio.pause();
+      audio.controls = false;
+      notice.textContent = "❌ You have already used both allowed plays.";
+    }
+
+    audio.addEventListener("play", () => {
+      playCount++;
+      localStorage.setItem("audio5_plays", playCount);
+      localStorage.setItem("audio5_time", now); // Save time on play
+
+      if (playCount === 2) {
+        notice.textContent = "⚠️ This is your last allowed play.";
+      } else if (playCount > 2) {
+        audio.pause();
+        audio.controls = false;
+        notice.textContent = "❌ You have reached the 2-play limit.";
+      }
+    });
+  </script>
+</body>
+</html>
