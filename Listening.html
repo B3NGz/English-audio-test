@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Listening Test with 15-Minute Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    #timer {
+      font-size: 24px;
+      color: red;
+      margin-bottom: 20px;
+    }
+    #formContainer {
+      position: relative;
+      display: inline-block;
+    }
+    #formOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 10;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      color: #333;
+    }
+    iframe {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Listening Test</h1>
+  <div id="timer">Time Remaining: 00:15:00</div>
+
+  <div id="formContainer">
+    <div id="formOverlay">⏳ Time is up! Form is now disabled.</div>
+    <iframe 
+      src="https://docs.google.com/forms/d/e/1FAIpQLSfH5-2082x4d8TLTYRVzD66GoZj1mOEUT68CuTpMV55S0JqyQ/viewform?embedded=true"
+      width="640" height="1038" 
+      frameborder="0" marginheight="0" marginwidth="0"
+      >Loading…</iframe>
+  </div>
+
+  <script>
+    const totalTime = 15 * 60; // 15 minutes in seconds
+    const timerDisplay = document.getElementById("timer");
+    const overlay = document.getElementById("formOverlay");
+
+    // Use a unique key for this form’s timer in localStorage
+    const storageKey = "listeningTestEndTime";
+
+    let endTime = localStorage.getItem(storageKey);
+    if (!endTime) {
+      const now = Date.now();
+      endTime = now + totalTime * 1000;
+      localStorage.setItem(storageKey, endTime);
+    } else {
+      endTime = parseInt(endTime, 10);
+    }
+
+    function formatTime(distance) {
+      const hours = Math.floor(distance / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      return `${hours.toString().padStart(2, '0')}:${minutes
+        .toString()
+        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimer() {
+      const now = Date.now();
+      const distance = endTime - now;
+
+      if (distance <= 0) {
+        timerDisplay.textContent = "Time Remaining: 00:00:00";
+        overlay.style.display = "flex";
+        clearInterval(timerInterval);
+        localStorage.removeItem(storageKey); // Clear localStorage when done
+      } else {
+        timerDisplay.textContent = `Time Remaining: ${formatTime(distance)}`;
+      }
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call
+  </script>
+</body>
+</html>
